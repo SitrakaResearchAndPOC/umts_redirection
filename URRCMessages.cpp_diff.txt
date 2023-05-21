@@ -1,0 +1,270 @@
+--- URRCMessages.cpp	2023-05-20 20:48:28.642810032 -0700
++++ URRCMessages.cpp_reject	2023-05-20 20:45:06.181234025 -0700
+@@ -42,6 +42,8 @@
+ namespace UMTS {
+ const std::string descrRrcConnectionSetup("RRC_Connection_Setup_Message");
+ const std::string descrRrcConnectionRelease("RRC_Connection_Release_Message");
++const std::string descrRrcConnectionReleaseAsReject("RRC_Connection_Release_As_Reject_Message");
++const std::string descrRrcConnectionReject("RRC_Connection_Reject_Message");
+ const std::string descrRadioBearerSetup("RRC Radio Bearer Setup Message");
+ const std::string descrRadioBearerRelease("RRC Radio Bearer Release Message");
+ const std::string descrCellUpdateConfirm("RRC Cell Update Confirm Message");
+@@ -803,6 +805,161 @@
+ 	gMacSwitch.writeHighSideCcch(result,descrRrcConnectionSetup);
+ }
+ 
++
++// Add by Sitraka for reject : 
++// Could be done with DL_CCCH but need to get *ueInitialId on *uep
++void sendRrcConnectionReject(UEInfo *uep, ASN::InitialUE_Identity *ueInitialId){
++
++	ASN::DL_CCCH_Message msg;
++	memset(&msg,0,sizeof(msg));
++	msg.message.present = ASN::DL_CCCH_MessageType_PR_rrcConnectionReject;
++        ASN::RRCConnectionReject *reject = &msg.message.choice.rrcConnectionReject;
++
++ 	// Creating RRCConnectionReject now
++	//msg.message.choice.rrcConnectionReject.present = ASN::RRCConnectionReject_PR_r3;
++	reject->present = ASN::RRCConnectionReject_PR_r3;	
++	ASN::RRCConnectionReject_r3_IEs_t *ies =
++		&msg.message.choice.rrcConnectionReject.choice.r3.rrcConnectionReject_r3;
++        
++	// initial UE identity
++	ies->initialUE_Identity =  *ueInitialId;	
++
++	// transaction ID
++	unsigned transactionId = uep->newTransactionId();
++	ies->rrc_TransactionIdentifier = transactionId;
++	
++	// rejection cause : Congestion or Unspecified
++	ies->rejectionCause = toAsnEnumerated(ASN::RejectionCause_congestion);
++	
++	//waitTime 0 until 16 sec
++	ies->waitTime = 0;
++
++    	// OPTIONNAL FOR REDIRECTION INFO PART ON Reject R3
++	/*Specifying redirected channel*/	
++
++	ASN::RRCConnectionReject_v690ext_IEs *v690 = &reject->choice.r3.laterNonCriticalExtensions->v690NonCriticalExtensions->rrcConnectionReject_v690ext;
++
++	//In generated code C : struct GSM_TargetCellInfoList	*redirectionInfo_v690ext      
++	//Just idea : v690->redirectionInfo_v690ext = (ASN::GSM_TargetCellInfoList*)calloc(1, sizeof(ASN::GSM_TargetCellInfoList));		
++	ASN::GSM_TargetCellInfoList *gsmTargetList = v690->redirectionInfo_v690ext;
++	// Set the number of GSM-TargetCellInfo instances
++	gsmTargetList->list.count = 2;
++	// Allocate memory for the GSM-TargetCellInfo instances
++	gsmTargetList->list.array = (ASN::GSM_TargetCellInfo**)calloc(gsmTargetList->list.count, sizeof(ASN::GSM_TargetCellInfo *));
++	// Set the fields of the first GSM-TargetCellInfo instance
++	(gsmTargetList->list.array[0])->bcch_ARFCN = 512;
++	// Frequency band : dcs1800BandUsed or 	pcs1900BandUsed
++	(gsmTargetList->list.array[0])->frequency_band = toAsnEnumerated(ASN::Frequency_Band_dcs1800BandUsed);
++	//(gsmTargetList->list.array[0])->bsic = 3; // BSIC IS NCC + BCC
++
++
++
++	// Set the fields of the second GSM-TargetCellInfo instance
++	(gsmTargetList->list.array[1])->bcch_ARFCN  = 514;
++	//(gsmTargetList->list.array[1])->bsic = 5; // BSIC IS NCC + BCC
++	(gsmTargetList->list.array[1])->frequency_band = toAsnEnumerated(ASN::Frequency_Band_dcs1800BandUsed);
++
++
++	// FUTUR CASE : LATHER-THAN-R3	
++        // WARNING: Now there are temporarily two pointers to the memory in UE_Identity.
++	//reject->present = ASN::RRCConnectionReject_PR_later_than_r3;	// Guessing we can use any of the variants.
++        //reject->choice.later_than_r3.initialUE_Identity =  *ueInitialId;
++        //reject->choice.later_than_r3.rrc_TransactionIdentifier = transactionId;
++
++	// FOR THE BYTE RESULT
++	ByteVector result(1000);
++
++	// WRITE THE ASN : choice 0 for urnti or may be uep->
++	if (!encodeCcchMsg(&msg,result,descrRrcConnectionSetup,uep,0)) {return;}
++	gMacSwitch.writeHighSideCcch(result,descrRrcConnectionReject);
++}
++
++
++// Add by Sitraka for reject2 : 
++// Could be done with DL_DCCH but need to get *ueInitialId on *uep
++void sendRrcConnectionReject(UEInfo *uep){
++
++	ASN::DL_CCCH_Message msg;
++	memset(&msg,0,sizeof(msg));
++	msg.message.present = ASN::DL_CCCH_MessageType_PR_rrcConnectionReject;
++        ASN::RRCConnectionReject *reject = &msg.message.choice.rrcConnectionReject;
++
++ 	// Creating RRCConnectionReject now
++	//msg.message.choice.rrcConnectionReject.present = ASN::RRCConnectionReject_PR_r3;
++	reject->present = ASN::RRCConnectionReject_PR_r3;	
++	ASN::RRCConnectionReject_r3_IEs_t *ies =
++		&msg.message.choice.rrcConnectionReject.choice.r3.rrcConnectionReject_r3;
++        
++	// initial UE identity 	AsnUeId mUid = uep->mUid;
++        /*
++	ASN::InitialUE_Identity_PR idType;
++	public:
++	ByteVector mImsi, mImei, mTmsiDS41;
++	UInt32_z mMcc, mMnc;
++	UInt32_z mTmsi, mPtmsi, mEsn;
++	UInt16_z mLac;
++	UInt8_z mRac;
++	*/ 
++	//ies->initialUE_Identity.present =  ASN::InitialUE_Identity_PR;
++	ASN::InitialUE_Identity ueInitialId;	
++	ueInitialId.present =  ASN::InitialUE_Identity_PR_NOTHING;
++	uep->mUid.asnParse(ueInitialId);	
++
++	ies->initialUE_Identity = ueInitialId;
++	//ueInitialId.imsi = uep->mUid.mImsi;
++
++	// transaction ID
++	unsigned transactionId = uep->newTransactionId();
++	ies->rrc_TransactionIdentifier = transactionId;
++	
++	// rejection cause : Congestion or Unspecified
++	ies->rejectionCause = toAsnEnumerated(ASN::RejectionCause_congestion);
++	
++	//waitTime 0 until 16 sec
++	ies->waitTime = 0;
++
++    	// OPTIONNAL FOR REDIRECTION INFO PART ON Reject R3
++	/*Specifying redirected channel*/	
++
++	ASN::RRCConnectionReject_v690ext_IEs *v690 = &reject->choice.r3.laterNonCriticalExtensions->v690NonCriticalExtensions->rrcConnectionReject_v690ext;
++
++	//In generated code C : struct GSM_TargetCellInfoList	*redirectionInfo_v690ext      
++	//Just idea : v690->redirectionInfo_v690ext = (ASN::GSM_TargetCellInfoList*)calloc(1, sizeof(ASN::GSM_TargetCellInfoList));		
++	ASN::GSM_TargetCellInfoList *gsmTargetList = v690->redirectionInfo_v690ext;
++	// Set the number of GSM-TargetCellInfo instances
++	gsmTargetList->list.count = 2;
++	// Allocate memory for the GSM-TargetCellInfo instances
++	gsmTargetList->list.array = (ASN::GSM_TargetCellInfo**)calloc(gsmTargetList->list.count, sizeof(ASN::GSM_TargetCellInfo *));
++	// Set the fields of the first GSM-TargetCellInfo instance
++	(gsmTargetList->list.array[0])->bcch_ARFCN = 512;
++	// Frequency band : dcs1800BandUsed or 	pcs1900BandUsed
++	(gsmTargetList->list.array[0])->frequency_band = toAsnEnumerated(ASN::Frequency_Band_dcs1800BandUsed);
++	//(gsmTargetList->list.array[0])->bsic = 3; // BSIC IS NCC + BCC
++
++
++
++	// Set the fields of the second GSM-TargetCellInfo instance
++	(gsmTargetList->list.array[1])->bcch_ARFCN  = 514;
++	//(gsmTargetList->list.array[1])->bsic = 5; // BSIC IS NCC + BCC
++	(gsmTargetList->list.array[1])->frequency_band = toAsnEnumerated(ASN::Frequency_Band_dcs1800BandUsed);
++
++
++	// FUTUR CASE : LATHER-THAN-R3	
++        // WARNING: Now there are temporarily two pointers to the memory in UE_Identity.
++	//reject->present = ASN::RRCConnectionReject_PR_later_than_r3;	// Guessing we can use any of the variants.
++        //reject->choice.later_than_r3.initialUE_Identity =  *ueInitialId;
++        //reject->choice.later_than_r3.rrc_TransactionIdentifier = transactionId;
++
++
++	// FOR THE BYTE RESULT
++	ByteVector result(1000);
++
++	// WRITE THE ASN : choice 0 for urnti or may be uep->msGetHandle()
++	if (!encodeCcchMsg(&msg,result,descrRrcConnectionSetup,uep,uep->msGetHandle())) {return;}
++	gMacSwitch.writeHighSideCcch(result,descrRrcConnectionReject);
++}
++
++
+ // Sent when an unrecognized UE tries to talk to us.
+ // Tell it to release the connection and start over.
+ static void sendRrcConnectionReleaseCcch(int32_t urnti)
+@@ -828,41 +985,69 @@
+ // This puts the phone in idle mode.
+ void sendRrcConnectionRelease(UEInfo *uep) //, ASN::InitialUE_Identity *ueInitialId
+ {
+-	// Create the RB Setup Message.
+-	ASN::DL_DCCH_Message_t msg;
++	ASN::DL_CCCH_Message_t msg;
+ 	memset(&msg,0,sizeof(msg));
+-	msg.message.present = ASN::DL_DCCH_MessageType_PR_rrcConnectionRelease;
+-	msg.message.choice.rrcConnectionRelease.present = ASN::RRCConnectionRelease_PR_r3;
+-	ASN::RRCConnectionRelease_r3_IEs_t *ies =
+-		&msg.message.choice.rrcConnectionRelease.choice.r3.rrcConnectionRelease_r3;
++	msg.message.present = ASN::DL_CCCH_MessageType_PR_rrcConnectionReject;
++        ASN::RRCConnectionReject *reject = &msg.message.choice.rrcConnectionReject;
++
++ 	// Creating RRCConnectionReject now
++	//msg.message.choice.rrcConnectionReject.present = ASN::RRCConnectionReject_PR_r3;
++	reject->present = ASN::RRCConnectionReject_PR_r3;	
++	ASN::RRCConnectionReject_r3_IEs_t *ies =
++		&msg.message.choice.rrcConnectionReject.choice.r3.rrcConnectionReject_r3;
+ 
+-	// Note: The RRC spec has a U-RNTI in the message, but it is not in the ASN.
+-	// I do not see why it would be needed.  If the message goes on DCCH the
+-	// U-RNTI will be in the MAC header.
+ 
++	//ies->initialUE_Identity.present =  ASN::InitialUE_Identity_PR;
++	ASN::InitialUE_Identity ueInitialId;	
++	ueInitialId.present =  ASN::InitialUE_Identity_PR_NOTHING;
++	uep->mUid.asnParse(ueInitialId);	
+ 
+-    // RRC_TransactionIdentifier_t  rrc_TransactionIdentifier;
++	ies->initialUE_Identity = ueInitialId;
++
++	// transaction ID
+ 	unsigned transactionId = uep->newTransactionId();
+ 	ies->rrc_TransactionIdentifier = transactionId;
++	
++	// rejection cause : Congestion or Unspecified
++	ies->rejectionCause = toAsnEnumerated(ASN::RejectionCause_congestion);
++	
++	//waitTime 0 until 16 sec
++	ies->waitTime = 0;
++
++    	// OPTIONNAL FOR REDIRECTION INFO PART ON Reject R3
++	/*Specifying redirected channel*/	
++
++	ASN::RRCConnectionReject_v690ext_IEs *v690 = &reject->choice.r3.laterNonCriticalExtensions->v690NonCriticalExtensions->rrcConnectionReject_v690ext;
++
++	//In generated code C : struct GSM_TargetCellInfoList	*redirectionInfo_v690ext      
++	//Just idea : v690->redirectionInfo_v690ext = (ASN::GSM_TargetCellInfoList*)calloc(1, sizeof(ASN::GSM_TargetCellInfoList));		
++	ASN::GSM_TargetCellInfoList *gsmTargetList = v690->redirectionInfo_v690ext;
++	// Set the number of GSM-TargetCellInfo instances
++	gsmTargetList->list.count = 2;
++	// Allocate memory for the GSM-TargetCellInfo instances
++	gsmTargetList->list.array = (ASN::GSM_TargetCellInfo**)calloc(gsmTargetList->list.count, sizeof(ASN::GSM_TargetCellInfo *));
++	// Set the fields of the first GSM-TargetCellInfo instance
++	(gsmTargetList->list.array[0])->bcch_ARFCN = 512;
++	// Frequency band : dcs1800BandUsed or 	pcs1900BandUsed
++	(gsmTargetList->list.array[0])->frequency_band = toAsnEnumerated(ASN::Frequency_Band_dcs1800BandUsed);
++	//(gsmTargetList->list.array[0])->bsic = 3; // BSIC IS NCC + BCC
++
++
++
++	// Set the fields of the second GSM-TargetCellInfo instance
++	(gsmTargetList->list.array[1])->bcch_ARFCN  = 514;
++	//(gsmTargetList->list.array[1])->bsic = 5; // BSIC IS NCC + BCC
++	(gsmTargetList->list.array[1])->frequency_band = toAsnEnumerated(ASN::Frequency_Band_dcs1800BandUsed);
+ 
+-	// N_308_t *n_308  /* OPTIONAL */;
+-	// N308 is the number of times UE sends response RrcConnectionReleaseComplete.
+-	// It is mandatory when this message is sent on DCCH.
+-	ies->n_308 = RN_CALLOC(ASN::N_308_t);	// It is a long.
+-	*ies->n_308 = 1;						// must be 1..8
+-
+-	// ReleaseCause_t   releaseCause;
+-	// Causes we might use are: normalEvent, userInactivity, pre_emptiveRelease.
+-	ies->releaseCause = toAsnEnumerated(ASN::ReleaseCause_normalEvent);
+-	// struct Rplmn_Information    *rplmn_information  /* OPTIONAL */;
+ 
+ 	ByteVector result(1000);
+-	if (!encodeDcchMsg(uep,SRB2,&msg,result,descrRrcConnectionRelease)) {return;}
++	if (!encodeCcchMsg(&msg,result,descrRrcConnectionRelease,uep,uep->msGetHandle())) {return;}
++	gMacSwitch.writeHighSideCcch(result,descrRrcConnectionRelease);
+ 
+ 	// Prepare to receive the reply to this message:
+ 	UeTransaction(uep,UeTransaction::ttRrcConnectionRelease,0,transactionId,stIdleMode);
+ 
+-	uep->ueWriteHighSide(SRB2, result, descrRrcConnectionRelease);
++	uep->ueWriteHighSide(SRB2, result, descrRrcConnectionReleaseAsReject);
+ }
+ 
+ // 3GPP 25.331 10.2.33
+@@ -2057,4 +2242,3 @@
+ }
+ 
+ }; // namespace UMTS
+-
