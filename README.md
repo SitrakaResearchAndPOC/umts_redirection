@@ -7,7 +7,7 @@
 * By sendRrcConnectionReject(uep,&msg->initialUE_Identity);  
 
     
-## For redirection on the second method rrcconnection_release (combined with attach reject) : 
+## For redirection on the second method rrcconnection_release (combined with attach reject with code reject) : 
 * Open  URRCMessages.cpp  
 * Change void sendRrcConnectionReject(UEInfo *uep) as on diff file : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_diff.txt  
   
