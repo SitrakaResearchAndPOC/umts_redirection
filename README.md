@@ -1,4 +1,6 @@
 # umts_redirection
+## ASN file
+https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/ASN/rrc.asn1
 
 ## For redirection for the first method rrcconnection_request (no code reject):  
 * Open  URRCMessages.cpp  
@@ -10,7 +12,7 @@
 ## For redirection on the second method rrcconnection_release (combined with attach reject with code reject) : 
 * Open  URRCMessages.cpp  
 * Change void sendRrcConnectionReject(UEInfo *uep) as on diff file : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_diff.txt  
-  
+ 
     
     
 ## For doing reject search all words reject and uncomment the code  : 
