@@ -163,9 +163,18 @@ mkdir /OpenBTS-UMTS/
 ```
 sudo cp apps/comp128 /OpenBTS-UMTS/
 ```
+```
+exit
+```
 
 ## Running OpenBTS-UMTS
 After successfully building and configuring, you are ready to launch OpenBTS-UMTS:
+```
+sudo su
+```
+```
+cd OpenBTS-UMTS
+```
 ```
 cd apps/OpenBTS-UMTS
 ```
