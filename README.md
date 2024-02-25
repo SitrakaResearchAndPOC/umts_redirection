@@ -375,6 +375,10 @@ git submodule update
 ./configure
 ```
 * Open  URRCMessages.cpp
+```
+gedit UMTS/URRCMessages.cpp
+```
+
 * Add description : descrRrcConnectionReject
 ```
 const std::string descrRrcConnectionReject("RRC_Connection_Reject_Message");
@@ -593,6 +597,9 @@ git submodule update
 ```
 
 * Add the description patch : 
+```
+gedit URRCMessages.cpp
+```
 ```
 const std::string descrRrcConnectionReleaseAsReject("RRC_Connection_Release_As_Reject_Message");
 ```
