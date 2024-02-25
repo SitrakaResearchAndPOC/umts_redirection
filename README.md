@@ -42,7 +42,41 @@ Result is as
 |   |   revision: 3
 |   |   FW Version: 8.0
 |   |   FPGA Version: 7.0
+
 ```
+Installing stable version of umts
+```
+git clone https://github.com/PentHertz/OpenBTS-UMTS.git
+# Optionally use 1.1 branch for a stable version
+```
+```
+git checkout 1.1
+```
+```
+cd  OpenBTS-UMTS
+```
+```
+git submodule init
+```
+```
+git submodule update
+```
+```
+./install_dependences.sh # install all dependencies without caring 
+```
+```
+./autogen.sh
+```
+```
+./configure
+```
+```
+make
+```
+```
+sudo make install
+```
+
 Making log file 
 ```
 sudo mkdir /var/log/OpenBTS-UMTS
@@ -89,16 +123,9 @@ cd coredumper-1.2.1#
 ```
 make && make install
 ```
-
+Then install checkout subscriberRegistry module and make the project:
 ```
-git clone https://github.com/PentHertz/OpenBTS-UMTS.git
-# Optionally use 1.1 branch for a stable version
-```
-```
-git checkout 1.1
-```
-```
-cd  OpenBTS-UMTS
+git clone https://github.com/PentHertz/subscriberRegistry
 ```
 ```
 git submodule init
@@ -107,13 +134,7 @@ git submodule init
 git submodule update
 ```
 ```
-./install_dependences.sh # install all dependencies without caring 
-```
-```
 ./autogen.sh
-```
-```
-./configure
 ```
 ```
 make
@@ -121,9 +142,62 @@ make
 ```
 sudo make install
 ```
+
+Copy sipauthserve's comp128 to run-time directory of OpenBTS-UMTS
+```
+sudo cp /OpenBTS-UMTS/comp128 /OpenBTS-UMTS/
 ```
 
+## Running OpenBTS-UMTS
+After successfully building and configuring, you are ready to launch OpenBTS-UMTS:
 ```
+cd /OpenBTS-UMTS
+```
+```
+sudo ./OpenBTS-UMTS
+```
+
+Several useful commands are available for debugging the packet-switched OpenBTS-UMTS application. Launch the OpenBTS-UMTS CLI to manipulate and configure your UMTS installation.
+```
+sudo /OpenBTS-UMTS/OpenBTS-UMTSCLI
+```
+
+## Some configuration to be done : 
+```
+devconfig GSM.Timer.T3212 1
+```
+```
+devconfig UMTS.Timer.T3212 1
+```
+```
+devconfig UMTS.Radio.ARFCNs 1
+```
+```
+devconfig UMTS.Radio.Band 900
+```
+```
+devconfig UMTS.Radio.C0 3050
+```
+use 
+```
+devconfig UMTS.Radio.C0 3050
+```
+```
+devconfig UMTS.RadioRxGain 25
+```
+Configure cellular network
+```
+devconfig UMTS.Identity.LAC 542
+```
+devconfig UMTS.Identity.MCC 001
+```
+```
+devconfig UMTS.Identity.MNC 1
+```
+```
+devconfig UMTS.Identity.URAI 279
+```
+
 
 
 ## REDIRECT V1 : For redirection for the first method rrcconnection_request (no code reject):  
