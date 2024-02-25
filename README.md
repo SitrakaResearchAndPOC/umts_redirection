@@ -247,6 +247,9 @@ cp -rf OpenBTS-UMTS OpenBTS-UMTS_Dos
 ```
 cd OpenBTS-UMTS_Dos
 ```
+```
+gedit SGSNGGSN/Sgsn.cpp
+```
 * search :
 ```
 handleRAUpdateRequest
@@ -269,7 +272,9 @@ sendRAUpdateReject(si,GmmCause::MS_identity_cannot_be_derived_by_the_network);
 https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/GetConfigurationKeys.cpp
 
 ## service reject at Sgsn.cpp
-
+```
+gedit SGSNGGSN/Sgsn.cpp
+```
 * search :
 ```
 handleServiceRequest
