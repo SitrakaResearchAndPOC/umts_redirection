@@ -25,3 +25,5 @@ https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/ASN/rrc.asn1
 ## List of reject cause : 
 * https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/GetConfigurationKeys.cpp 
 
+## Doing diff file 
+* https://www.linuxtricks.fr/wiki/utiliser-diff-et-patch-sous-linux#:~:text=Introduction,les%20diff%C3%A9rences%20ligne%20par%20ligne.
