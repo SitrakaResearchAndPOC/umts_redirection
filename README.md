@@ -189,6 +189,7 @@ Configure cellular network
 ```
 devconfig UMTS.Identity.LAC 542
 ```
+```
 devconfig UMTS.Identity.MCC 001
 ```
 ```
