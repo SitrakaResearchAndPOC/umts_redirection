@@ -258,6 +258,12 @@ cd OpenBTS-UMTS
 git checkout 1.1
 ```
 ```
+git submodule init
+```
+```
+git submodule update
+```
+```
 cd ..
 ```
 ```
