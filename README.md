@@ -203,8 +203,44 @@ devconfig UMTS.Identity.MNC 1
 ```
 devconfig UMTS.Identity.URAI 279
 ```
+## Routing area update reject at Sgsn.cpp
+* search :
+```
+handleRAUpdateRequest
+```
+And  uncomment all function call: 
+```
+sendRAUpdateReject;
+```
+like function  : 
+```
+sendRAUpdateReject(si,GmmCause::Location_Area_not_allowed);
+```			
+```
+sendRAUpdateReject(si,GmmCause::Implicitly_detached);
+```
+```
+sendRAUpdateReject(si,GmmCause::MS_identity_cannot_be_derived_by_the_network);
+```
+* The code of Location Update Reject (LUR) could be find at : 
+https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/GetConfigurationKeys.cpp
 
+## service reject at Sgsn.cpp
 
+* search :
+```
+handleServiceRequest
+```
+And  uncomment all function call: 
+```
+L3GmmMsgServiceReject
+```
+like function  : 
+```
+L3GmmMsgServiceReject sr(GmmCause::Implicitly_detached);
+```
+* The code of Location Update Reject (LUR) could be find at : 
+https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/GetConfigurationKeys.cpp
 
 ## REDIRECT V1 : For redirection for the first method rrcconnection_request (no code reject):  
 * Could run with stable (1.1) or latest branch
