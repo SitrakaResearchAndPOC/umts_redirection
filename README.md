@@ -293,6 +293,27 @@ L3GmmMsgServiceReject sr(GmmCause::Implicitly_detached);
 * The code of Location Update Reject (LUR) could be find at : 
 https://github.com/PentHertz/OpenBTS-UMTS/blob/master/SGSNGGSN/Sgsn.cpp </br>
 auxilliary at :  https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/GetConfigurationKeys.cpp </br>
+</br>
+</br>
+compiling openbts_umts_dos
+```
+rm -rf apps/*
+```
+```
+./autogen.sh
+```
+```
+./configure
+```
+```
+make
+```
+```
+sudo make install
+```
+```
+exit
+```
 
 
 ## REDIRECT V1 : For redirection for the first method rrcconnection_request (no code reject):  
