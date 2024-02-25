@@ -16,10 +16,10 @@ git clone https://github.com/PentHertz/OpenBTS-UMTS.git
 # Optionally use 1.1 branch for a stable version
 ```
 ```
-git checkout 1.1
-```
-```
 cd  OpenBTS-UMTS
+```
+```
+git checkout 1.1
 ```
 ```
 git submodule init
