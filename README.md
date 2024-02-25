@@ -151,7 +151,7 @@ sudo cp /OpenBTS-UMTS/comp128 /OpenBTS-UMTS/
 ## Running OpenBTS-UMTS
 After successfully building and configuring, you are ready to launch OpenBTS-UMTS:
 ```
-cd /OpenBTS-UMTS
+cd apps/OpenBTS-UMTS
 ```
 ```
 sudo ./OpenBTS-UMTS
@@ -159,7 +159,7 @@ sudo ./OpenBTS-UMTS
 
 Several useful commands are available for debugging the packet-switched OpenBTS-UMTS application. Launch the OpenBTS-UMTS CLI to manipulate and configure your UMTS installation.
 ```
-sudo /OpenBTS-UMTS/OpenBTS-UMTSCLI
+sudo /OpenBTS-UMTS/apps/OpenBTS-UMTSCLI
 ```
 
 ## Some configuration to be done : 
@@ -207,12 +207,41 @@ devconfig UMTS.Identity.URAI 279
 
 
 ## REDIRECT V1 : For redirection for the first method rrcconnection_request (no code reject):  
-```
-
-```
-
-
 * Could run with stable (1.1) or latest branch
+```
+exit
+```
+```
+sudo su
+```
+```
+mkdir redirect1
+```
+```
+cd redirect1
+```
+```
+git clone https://github.com/PentHertz/OpenBTS-UMTS.git
+# Optionally use 1.1 branch for a stable version
+```
+```
+git checkout 1.1
+```
+```
+cd  OpenBTS-UMTS
+```
+```
+git submodule init
+```
+```
+git submodule update
+```
+```
+./autogen.sh
+```
+```
+./configure
+```
 * Open  URRCMessages.cpp
 * Add description : descrRrcConnectionReject
 ```
@@ -386,12 +415,51 @@ void sendRrcConnectionReject(UEInfo *uep){
 	gMacSwitch.writeHighSideCcch(result,descrRrcConnectionReject);
 }
 ```
+```
+make
+```
+```
+sudo make install
+```
+
 * diff file at : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages_diff0.txt
 * cpp modified : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_reject0
 
     
 ## REDIRECT V2 : For redirection on the second method rrcconnection_release (combined with attach reject with code reject) : 
 * run only with the latest branch :
+```
+exit
+```
+```
+sudo su
+```
+```
+mkdir redirect2
+```
+```
+cd redirect2
+```
+```
+git clone https://github.com/PentHertz/OpenBTS-UMTS.git
+# Optionally use latest branch
+```
+```
+cd  OpenBTS-UMTS
+```
+```
+git submodule init
+```
+```
+git submodule update
+```
+```
+./autogen.sh
+```
+```
+./configure
+```
+
 * Add the description patch : 
 ```
 const std::string descrRrcConnectionReleaseAsReject("RRC_Connection_Release_As_Reject_Message");
@@ -472,6 +540,13 @@ void sendRrcConnectionRelease(UEInfo *uep) //, ASN::InitialUE_Identity *ueInitia
 ```
 * diff file at : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages_diff1.txt
 * cpp modified : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_reject1
+
+```
+make
+```
+```
+sudo make install
+```
 
 ## COMBINING REDIRECT V1 AND V2 : 
 * https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_diff.txt
