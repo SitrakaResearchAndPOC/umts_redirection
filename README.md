@@ -135,6 +135,9 @@ Then install checkout subscriberRegistry module and make the project:
 git clone https://github.com/PentHertz/subscriberRegistry
 ```
 ```
+cd subscriberRegistry
+```
+```
 git submodule init
 ```
 ```
@@ -142,6 +145,9 @@ git submodule update
 ```
 ```
 ./autogen.sh
+```
+```
+./configure
 ```
 ```
 make
