@@ -322,9 +322,6 @@ auxilliary at :  https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/
 compiling openbts_umts_dos
 
 ```
-rm -rf apps/*
-```
-```
 ./autogen.sh
 ```
 ```
