@@ -10,6 +10,26 @@ apt update
 ```
 apt-get install git sqlite3*
 ```
+Installing stable version of umts
+```
+git clone https://github.com/PentHertz/OpenBTS-UMTS.git
+# Optionally use 1.1 branch for a stable version
+```
+```
+git checkout 1.1
+```
+```
+cd  OpenBTS-UMTS
+```
+```
+git submodule init
+```
+```
+git submodule update
+```
+```
+./install_dependences.sh # install all dependencies without caring 
+```
 ```
 uhd_images_downloader
 ```
@@ -43,26 +63,6 @@ Result is as
 |   |   FW Version: 8.0
 |   |   FPGA Version: 7.0
 
-```
-Installing stable version of umts
-```
-git clone https://github.com/PentHertz/OpenBTS-UMTS.git
-# Optionally use 1.1 branch for a stable version
-```
-```
-git checkout 1.1
-```
-```
-cd  OpenBTS-UMTS
-```
-```
-git submodule init
-```
-```
-git submodule update
-```
-```
-./install_dependences.sh # install all dependencies without caring 
 ```
 ```
 ./autogen.sh
