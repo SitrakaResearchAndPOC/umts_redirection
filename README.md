@@ -270,8 +270,9 @@ sendRAUpdateReject(si,GmmCause::Implicitly_detached);
 ```
 sendRAUpdateReject(si,GmmCause::MS_identity_cannot_be_derived_by_the_network);
 ```
-* The code of Location Update Reject (LUR) could be find at : 
-https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/GetConfigurationKeys.cpp
+* The code of Location Update Reject (LUR) could be find at : </br>
+https://github.com/PentHertz/OpenBTS-UMTS/blob/master/SGSNGGSN/Sgsn.cpp </br>
+auxilliary at :  https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/GetConfigurationKeys.cpp </br>
 
 ## service reject at Sgsn.cpp
 ```
@@ -290,7 +291,9 @@ like function  :
 L3GmmMsgServiceReject sr(GmmCause::Implicitly_detached);
 ```
 * The code of Location Update Reject (LUR) could be find at : 
-https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/GetConfigurationKeys.cpp
+https://github.com/PentHertz/OpenBTS-UMTS/blob/master/SGSNGGSN/Sgsn.cpp </br>
+auxilliary at :  https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/apps/GetConfigurationKeys.cpp </br>
+
 
 ## REDIRECT V1 : For redirection for the first method rrcconnection_request (no code reject):  
 * Could run with stable (1.1) or latest branch
