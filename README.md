@@ -103,10 +103,10 @@ And also tell the kernel that IP forwarding is allowed:
 ```
 echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward 1>/dev/null
 ```
-## (Optional) Using comp128
 ```
 cd ..
 ```
+## (Optional) Using comp128
 Checkout and install the libcoredumper library:
 ```
 git clone https://github.com/PentHertz/libcoredumper
@@ -118,7 +118,7 @@ cd libcoredumper
 ./build.sh
 ```
 ```
-cd coredumper-1.2.1#
+cd coredumper-1.2.1
 ```
 ```
 ./configure
@@ -126,6 +126,10 @@ cd coredumper-1.2.1#
 ```
 make && make install
 ```
+```
+cd ../..
+```
+
 Then install checkout subscriberRegistry module and make the project:
 ```
 git clone https://github.com/PentHertz/subscriberRegistry
