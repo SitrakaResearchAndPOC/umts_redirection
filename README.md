@@ -172,11 +172,17 @@ After successfully building and configuring, you are ready to launch OpenBTS-UMT
 ```
 sudo su
 ```
+Terminal 1
 ```
-cd OpenBTS-UMTS
+cd OpenBTS-UMTS/apps
 ```
 ```
-cd apps/OpenBTS-UMTS
+./OpenBTS-UMTS
+```
+Tape ctrl+shift+T
+Terminal 2
+```
+cd OpenBTS-UMTS/apps
 ```
 ```
 sudo ./OpenBTS-UMTS
