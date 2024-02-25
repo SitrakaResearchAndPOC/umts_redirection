@@ -177,9 +177,6 @@ void sendRrcConnectionReject(UEInfo *uep){
 	gMacSwitch.writeHighSideCcch(result,descrRrcConnectionReject);
 }
 ```
-
-
-
 * diff file at : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages_diff0.txt
 * cpp modified : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_reject0
 
@@ -190,9 +187,85 @@ void sendRrcConnectionReject(UEInfo *uep){
 ```
 const std::string descrRrcConnectionReleaseAsReject("RRC_Connection_Release_As_Reject_Message");
 ```
+* Find and delete this function
+```
+void sendRrcConnectionRelease(UEInfo *uep)
+```
+And Replace by : 
+```
+// This puts the phone in idle mode.
+void sendRrcConnectionRelease(UEInfo *uep) //, ASN::InitialUE_Identity *ueInitialId
+{
+	ASN::DL_CCCH_Message_t msg;
+	memset(&msg,0,sizeof(msg));
+	msg.message.present = ASN::DL_CCCH_MessageType_PR_rrcConnectionReject;
+        ASN::RRCConnectionReject *reject = &msg.message.choice.rrcConnectionReject;
 
-* Open  URRCMessages.cpp  
-* Change void sendRrcConnectionReject(UEInfo *uep) as on diff file : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_diff.txt
+ 	// Creating RRCConnectionReject now
+	//msg.message.choice.rrcConnectionReject.present = ASN::RRCConnectionReject_PR_r3;
+	reject->present = ASN::RRCConnectionReject_PR_r3;	
+	ASN::RRCConnectionReject_r3_IEs_t *ies =
+		&msg.message.choice.rrcConnectionReject.choice.r3.rrcConnectionReject_r3;
+
+
+	//ies->initialUE_Identity.present =  ASN::InitialUE_Identity_PR;
+	ASN::InitialUE_Identity ueInitialId;	
+	ueInitialId.present =  ASN::InitialUE_Identity_PR_NOTHING;
+	uep->mUid.asnParse(ueInitialId);	
+
+	ies->initialUE_Identity = ueInitialId;
+
+	// transaction ID
+	unsigned transactionId = uep->newTransactionId();
+	ies->rrc_TransactionIdentifier = transactionId;
+	
+	// rejection cause : Congestion or Unspecified
+	ies->rejectionCause = toAsnEnumerated(ASN::RejectionCause_congestion);
+	
+	//waitTime 0 until 16 sec
+	ies->waitTime = 0;
+
+    	// OPTIONNAL FOR REDIRECTION INFO PART ON Reject R3
+	/*Specifying redirected channel*/	
+
+	ASN::RRCConnectionReject_v690ext_IEs *v690 = &reject->choice.r3.laterNonCriticalExtensions->v690NonCriticalExtensions->rrcConnectionReject_v690ext;
+
+	//In generated code C : struct GSM_TargetCellInfoList	*redirectionInfo_v690ext      
+	//Just idea : v690->redirectionInfo_v690ext = (ASN::GSM_TargetCellInfoList*)calloc(1, sizeof(ASN::GSM_TargetCellInfoList));		
+	ASN::GSM_TargetCellInfoList *gsmTargetList = v690->redirectionInfo_v690ext;
+	// Set the number of GSM-TargetCellInfo instances
+	gsmTargetList->list.count = 2;
+	// Allocate memory for the GSM-TargetCellInfo instances
+	gsmTargetList->list.array = (ASN::GSM_TargetCellInfo**)calloc(gsmTargetList->list.count, sizeof(ASN::GSM_TargetCellInfo *));
+	// Set the fields of the first GSM-TargetCellInfo instance
+	(gsmTargetList->list.array[0])->bcch_ARFCN = 512;
+	// Frequency band : dcs1800BandUsed or 	pcs1900BandUsed
+	(gsmTargetList->list.array[0])->frequency_band = toAsnEnumerated(ASN::Frequency_Band_dcs1800BandUsed);
+	//(gsmTargetList->list.array[0])->bsic = 3; // BSIC IS NCC + BCC
+
+
+
+	// Set the fields of the second GSM-TargetCellInfo instance
+	(gsmTargetList->list.array[1])->bcch_ARFCN  = 514;
+	//(gsmTargetList->list.array[1])->bsic = 5; // BSIC IS NCC + BCC
+	(gsmTargetList->list.array[1])->frequency_band = toAsnEnumerated(ASN::Frequency_Band_dcs1800BandUsed);
+
+
+	ByteVector result(1000);
+	if (!encodeCcchMsg(&msg,result,descrRrcConnectionRelease,uep,uep->msGetHandle())) {return;}
+	gMacSwitch.writeHighSideCcch(result,descrRrcConnectionRelease);
+
+	// Prepare to receive the reply to this message:
+	UeTransaction(uep,UeTransaction::ttRrcConnectionRelease,0,transactionId,stIdleMode);
+
+	uep->ueWriteHighSide(SRB2, result, descrRrcConnectionReleaseAsReject);
+}
+```
+* diff file at : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages_diff1.txt
+* cpp modified : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_reject1
+
+## COMBINING REDIRECT V1 AND V2 : 
+* https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_diff.txt
 * cpp modified : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_reject
     
     
