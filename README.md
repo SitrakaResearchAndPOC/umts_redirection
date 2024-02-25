@@ -2,7 +2,136 @@
 ## ASN file
 https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/ASN/rrc.asn1
 
+## Installation :
+* https://github.com/PentHertz/OpenBTS-UMTS/wiki
+```
+apt update
+```
+```
+apt-get install git sqlite3*
+```
+```
+uhd_images_downloader
+```
+```
+uhd_usrp_probe 
+```
+Result is as
+```
+[INFO] [UHD] linux; GNU C++ version 11.2.0; Boost_107400; UHD_4.1.0.5-3
+[INFO] [B200] Loading firmware image: /usr/share/uhd/images/usrp_b200_fw.hex...
+[INFO] [B200] Detected Device: B205mini
+[INFO] [B200] Loading FPGA image: /usr/share/uhd/images/usrp_b205mini_fpga.bin...
+[INFO] [B200] Operating over USB 3.
+[INFO] [B200] Initialize CODEC control...
+[INFO] [B200] Initialize Radio control...
+[INFO] [B200] Performing register loopback test... 
+[INFO] [B200] Register loopback test passed
+[INFO] [B200] Setting master clock rate selection to 'automatic'.
+[INFO] [B200] Asking for clock rate 16.000000 MHz... 
+[INFO] [B200] Actually got clock rate 16.000000 MHz.
+  _____________________________________________________
+ /
+|       Device: B-Series Device
+|     _____________________________________________________
+|    /
+|   |       Mboard: B205mini
+|   |   serial: 31BBF5F
+|   |   name: B205i
+|   |   product: 30522
+|   |   revision: 3
+|   |   FW Version: 8.0
+|   |   FPGA Version: 7.0
+```
+Making log file 
+```
+sudo mkdir /var/log/OpenBTS-UMTS
+```
+Copying transceiver
+```
+cp TransceiverUHD/transceiver apps/ 
+```
+On the file OpenBTS-UMTS/apps
+```
+cd apps
+```
+```
+sudo sqlite3 /etc/OpenBTS-UMTS/OpenBTS-UMTS.db ".read OpenBTS-UMTS.example.sql"
+```
+You will need to setup forwarding in iptables to properly forward data between your devices, your host machine:
+```
+sudo iptables -t nat -A POSTROUTING -o <INTERNET INTERFACE> -j MASQUERADE
+```
+And also tell the kernel that IP forwarding is allowed:
+```
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward 1>/dev/null
+```
+## (Optional) Using comp128
+```
+cd ..
+```
+Checkout and install the libcoredumper library:
+```
+git clone https://github.com/PentHertz/libcoredumper
+```
+```
+cd libcoredumper
+```
+```
+./build.sh
+```
+```
+cd coredumper-1.2.1#
+```
+```
+./configure
+```
+```
+make && make install
+```
+
+```
+git clone https://github.com/PentHertz/OpenBTS-UMTS.git
+# Optionally use 1.1 branch for a stable version
+```
+```
+git checkout 1.1
+```
+```
+cd  OpenBTS-UMTS
+```
+```
+git submodule init
+```
+```
+git submodule update
+```
+```
+./install_dependences.sh # install all dependencies without caring 
+```
+```
+./autogen.sh
+```
+```
+./configure
+```
+```
+make
+```
+```
+sudo make install
+```
+```
+
+```
+
+
 ## REDIRECT V1 : For redirection for the first method rrcconnection_request (no code reject):  
+```
+
+```
+
+
 * Could run with stable (1.1) or latest branch
 * Open  URRCMessages.cpp
 * Add description : descrRrcConnectionReject
