@@ -236,6 +236,17 @@ devconfig UMTS.Identity.MNC 1
 devconfig UMTS.Identity.URAI 279
 ```
 ## Routing area update reject at Sgsn.cpp
+```
+exit
+```
+```
+sudo su
+```
+cp -rf OpenBTS-UMTS OpenBTS-UMTS_Dos
+```
+```
+cd OpenBTS-UMTS_Dos
+```
 * search :
 ```
 handleRAUpdateRequest
