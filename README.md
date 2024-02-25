@@ -598,7 +598,7 @@ git submodule update
 
 * Add the description patch : 
 ```
-gedit URRCMessages.cpp
+gedit UMTS/URRCMessages.cpp
 ```
 ```
 const std::string descrRrcConnectionReleaseAsReject("RRC_Connection_Release_As_Reject_Message");
