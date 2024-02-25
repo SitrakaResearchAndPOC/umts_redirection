@@ -3,6 +3,7 @@
 https://github.com/RangeNetworks/OpenBTS-UMTS/blob/master/ASN/rrc.asn1
 
 ## REDIRECT V1 : For redirection for the first method rrcconnection_request (no code reject):  
+* Could run with stable (1.1) or latest branch
 * Open  URRCMessages.cpp
 * Add description : descrRrcConnectionReject
 ```
@@ -183,7 +184,13 @@ void sendRrcConnectionReject(UEInfo *uep){
 * cpp modified : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_reject0
 
     
-## For redirection on the second method rrcconnection_release (combined with attach reject with code reject) : 
+## REDIRECT V2 : For redirection on the second method rrcconnection_release (combined with attach reject with code reject) : 
+* run only with the latest branch :
+* Add the description patch : 
+```
+const std::string descrRrcConnectionReleaseAsReject("RRC_Connection_Release_As_Reject_Message");
+```
+
 * Open  URRCMessages.cpp  
 * Change void sendRrcConnectionReject(UEInfo *uep) as on diff file : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_diff.txt
 * cpp modified : https://github.com/SitrakaResearchAndPOC/umts_redirection/blob/main/URRCMessages.cpp_reject
