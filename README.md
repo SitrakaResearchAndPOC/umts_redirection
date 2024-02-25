@@ -90,6 +90,9 @@ On the file OpenBTS-UMTS/apps
 cd apps
 ```
 ```
+mkdir /etc/OpenBTS-UMTS/
+```
+```
 sudo sqlite3 /etc/OpenBTS-UMTS/OpenBTS-UMTS.db ".read OpenBTS-UMTS.example.sql"
 ```
 You will need to setup forwarding in iptables to properly forward data between your devices, your host machine:
