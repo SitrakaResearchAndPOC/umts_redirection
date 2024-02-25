@@ -186,6 +186,11 @@ devconfig UMTS.Radio.C0 3050
 devconfig UMTS.RadioRxGain 25
 ```
 Configure cellular network
+CI is as BSIC
+```
+devconfig UMTS.Identity.CI 7708
+```
+
 ```
 devconfig UMTS.Identity.LAC 542
 ```
