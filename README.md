@@ -158,7 +158,10 @@ sudo make install
 
 Copy sipauthserve's comp128 to run-time directory of OpenBTS-UMTS
 ```
-sudo cp /OpenBTS-UMTS/comp128 /OpenBTS-UMTS/
+mkdir /OpenBTS-UMTS/
+```
+```
+sudo cp apps/comp128 /OpenBTS-UMTS/
 ```
 
 ## Running OpenBTS-UMTS
@@ -171,6 +174,7 @@ sudo ./OpenBTS-UMTS
 ```
 
 Several useful commands are available for debugging the packet-switched OpenBTS-UMTS application. Launch the OpenBTS-UMTS CLI to manipulate and configure your UMTS installation.
+
 ```
 sudo /OpenBTS-UMTS/apps/OpenBTS-UMTSCLI
 ```
