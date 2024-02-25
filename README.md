@@ -242,6 +242,17 @@ exit
 ```
 sudo su
 ```
+git clone https://github.com/PentHertz/OpenBTS-UMTS.git
+```
+```
+cd OpenBTS-UMTS
+```
+```
+git checkout 1.1
+```
+```
+cd ..
+```
 ```
 cp -rf OpenBTS-UMTS OpenBTS-UMTS_Dos
 ```
